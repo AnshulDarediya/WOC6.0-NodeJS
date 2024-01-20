@@ -4,6 +4,7 @@ import bodyParser from "body-parser";
 import { dirname } from "path";
 import { fileURLToPath } from "url";
 import { Server } from 'socket.io';
+import { Socket } from "dgram";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -14,8 +15,10 @@ var NameForSocketID=new Map();
 //RoomForSocketID will store the room_code of a user which he/she is in with particular SocketID;
 var RoomForSocketID=new Map();
 
-//RoomUserCount will keep track of number of user in a particlar room with some room code == Room_Code;
-var RoomUserCount=new Map();
+//RoomSocketIDs will keep track of All socketIDs in a Room
+var RoomSocketIDs= new Map() ;  
+
+var RoomHost=new Set();
 
 //Global Variable User_Name and Room_Code are used in General
 var User_Name="",Room_Code="";
@@ -48,7 +51,7 @@ app.post("/", (req, res) => {
         const roomCode = req.body.roomCodeInput;
         User_Name=username;
         Room_Code=roomCode;
-        if (username.trim() !== "" && RoomUserCount.has(Room_Code) ) {
+        if (username.trim() !== "" && RoomSocketIDs.has(Room_Code) ) {
             res.sendFile(__dirname + "/public/index2.html");
         } else {
             res.status(400).send("Invalid room code");
@@ -56,7 +59,9 @@ app.post("/", (req, res) => {
     }
 });
 
-
+server.listen(port, () => {
+    console.log(`Listening on port ${port}`);
+});
 
 
   
@@ -64,16 +69,16 @@ io.on('connection', (socket) => {
     
     if(Room_Code==""){
         Room_Code=generateRandomString(5);
-        while(RoomUserCount.has(Room_Code)) Room_Code=generateRandomString(5);
+        while(RoomSocketIDs.has(Room_Code)) Room_Code=generateRandomString(5);
+        var temp=new Set();
+        RoomSocketIDs.set(Room_Code,temp);
+        RoomHost.add(socket.id);
     } 
     
     // Maping NameForSocketID -->(socket.id, User_Name) and RoomForSocketID -->(socket.id,Room_code)
     NameForSocketID.set(socket.id,User_Name);
     RoomForSocketID.set(socket.id,Room_Code);
-
-    // Upadting Map of RoomUserCount
-    if(RoomUserCount.has(Room_Code)) RoomUserCount.set(Room_Code,RoomUserCount.get(Room_Code)+1);
-    else RoomUserCount.set(Room_Code,1);
+    RoomSocketIDs.get(Room_Code).add(socket);
     
     //Resetting User_Name and Room_Code for reuse
     User_Name="";
@@ -93,12 +98,14 @@ io.on('connection', (socket) => {
     //handle When a Client Disconnect
     socket.on('disconnect', () => {
         console.log('user disconnected');
+        if(RoomHost.has(socket.id)) FireUserJoined(socket);
         LeaveRoomUpdate(socket);
     });
 
     socket.on("leave-room", (roomCode) => {
+        if(RoomHost.has(socket.id)) FireUserJoined(socket);
         socket.leave(RoomForSocketID.get(socket.id));
-        console.log(`User left room: ${RoomForSocketID.get(socket.id)}`);
+        console.log(`User left room: ${NameForSocketID.get(socket.id)}`);
         LeaveRoomUpdate(socket);
     });
     
@@ -110,16 +117,9 @@ io.on('connection', (socket) => {
         io.to(RoomForSocketID.get(socket.id)).emit('msg_to_all_client',mssg);
     });
 
-    // socket.on('draw', (data) => {
-    //     // Broadcast the drawing data to other users in the same room
-    //     socket.broadcast.emit('draw', data);
-    //   });
-
 });
 
-server.listen(port, () => {
-    console.log(`Listening on port ${port}`);
-});
+
 
 function generateRandomString(length) {
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -132,6 +132,22 @@ function generateRandomString(length) {
   
     return result;
 }
+function FireUserJoined(socket){
+    var rmCode=RoomForSocketID.get(socket.id);
+    RoomHost.delete(socket.id);
+    // console.log(`User left room: ${NameForSocketID.get(socket.id)}`);
+    for(const skt of RoomSocketIDs.get(rmCode).values()){ 
+        if(skt===socket) continue;
+        io.to(skt.id).emit('redirectToHome');
+        LeaveRoom(skt);
+    }
+    RoomSocketIDs.delete(rmCode);
+}
+function LeaveRoom(socket){
+    socket.leave(RoomForSocketID.get(socket.id));
+    console.log(`User left room: ${NameForSocketID.get(socket.id)}`);
+    LeaveRoomUpdate(socket);
+}
 function LeaveRoomUpdate(socket){
         
     //Sending User_Name of user just disconnected in these room to all the members of Room
@@ -139,11 +155,7 @@ function LeaveRoomUpdate(socket){
         
         //updating Map of NameForSocketID and RoomUserCount
         NameForSocketID.delete(NameForSocketID.get(socket.id));
-        RoomUserCount.set(RoomForSocketID.get(socket.id),RoomUserCount.get(RoomForSocketID.get(socket.id))-1);  
-        
-        //Checking if the room became empty after these Client disconnects ,if so we will delete the room
-        if(RoomUserCount.get(RoomForSocketID.get(socket.id))==0) RoomUserCount.delete(RoomForSocketID.get(socket.id));
-        
+
         //updating map of RoomForSocketID
         RoomForSocketID.delete(socket.id);
 }

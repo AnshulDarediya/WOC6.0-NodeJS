@@ -9,6 +9,12 @@ document.addEventListener('DOMContentLoaded', function () {
   const roomCode = document.getElementById("room-code-value");
   const leaveRoomButton = document.getElementById('leave-room');
 
+  socket.on('redirectToHome',  () => {
+    // redirect to new URL
+    console.log("Home");
+    window.location.href = "/";
+  });
+
   socket.on("userName_to_client_joined", (msg) => {
     const item = document.createElement("p");
     item.textContent = msg + " joined";

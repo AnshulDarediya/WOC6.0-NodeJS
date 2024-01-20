@@ -1,0 +1,112 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f2f2f2;
+}
+
+#main-container {
+    display: flex;
+    height: 100vh;
+}
+
+#left-pane, #right-pane {
+    width: 20%;
+    padding: 20px;
+    box-sizing: border-box;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+#left-pane {
+    display: flex;
+    flex-direction: column;
+}
+
+#user-list {
+    flex-grow: 1;
+}
+
+#room-controls, #room-code {
+    margin-top: 20px;
+}
+
+#center-pane {
+    width: 60%;
+    padding: 20px;
+    box-sizing: border-box;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+#countdown,
+#word-to-guess {
+    display: inline;
+    margin-right: 20px;
+}
+
+canvas {
+    border: 1px solid #ccc;
+}
+
+#drawing-tools {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+#right-pane {
+    width: 20%;
+    padding: 20px;
+    box-sizing: border-box;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+}
+
+#chat-box {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+#chat-messages {
+    flex-grow: 1;
+    overflow-y: auto;
+    border-bottom: 1px solid #ccc;
+}
+
+#message-input {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+button {
+    background-color: #4caf50;
+    color: #fff;
+    padding: 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+#start-game,
+#leave-room {
+    display: block;
+    margin-top: 10px;
+}

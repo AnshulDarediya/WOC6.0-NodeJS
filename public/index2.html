@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pictionary Game Room</title>
+    <link rel="stylesheet" href="styles2.css" />
+  </head>
+  <body>
+    <div id="main-container">
+      <div id="left-pane">
+        <div id="user-list">
+          <h3>Users Joined</h3>
+          <ul id="user-list-items">
+            <!-- User list items will be dynamically added here -->
+          </ul>
+        </div>
+        <div id="room-controls">
+          <button id="start-game">Start Game</button>
+          <button id="leave-room">Leave Room</button>
+        </div>
+        <div id="room-code">
+          <h3>Room Code</h3>
+          <p id="room-code-value"></p>
+        </div>
+      </div>
+
+      <div id="center-pane">
+        <header>
+          <h1>Time Remaining: <span id="countdown">60s</span></h1>
+          <h2>Word to Guess: <span id="word-to-guess">Apple</span></h2>
+        </header>
+        <canvas id="drawing-canvas" width="600" height="400"></canvas>
+        <div id="drawing-tools">
+          <select id="brush-size">
+            <option value="small">Small</option>
+            <option value="medium">Medium</option>
+            <option value="large">Large</option>
+          </select>
+          <input type="color" id="brush-color" value="#000000" />
+          <button id="eraser">Clear</button>
+        </div>
+      </div>
+
+      <div id="right-pane">
+        <div id="chat-box">
+          <div id="chat-messages">
+            <!-- Chat messages will be dynamically added here -->
+          </div>
+          <div id="message-input">
+            <input
+              type="text"
+              id="message-text"
+              placeholder="Type your message..."
+            />
+            <button id="send-message">Send</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- <script src="app.js"></script> -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="canvas.js"></script>
+    <script src="client.js"></script>
+ 
+  </body>
+</html>

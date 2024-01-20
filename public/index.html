@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pictionary Game</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="main-container">
+        <div class="box" id="create-room">
+            <h2>Create a Room</h2>
+            <form action="/" method="POST">
+                <input type="text" id="createUsername" name="createUsername" placeholder="Your Username" required>
+                <button type="submit">Create Room</button>
+            </form>
+        </div>
+
+        <div class="box" id="join-room">
+            <h2>Join a Room</h2>
+            <form action="/" method="POST">
+                <input type="text" id="joinUsername" name="joinUsername" placeholder="Your Username" required>
+                <input type="text" id="roomCodeInput" name="roomCodeInput" placeholder="Room Code" required>
+                <button type="submit">Join Room</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+    // const socket = io();
+    </script>
+</body>
+</html>

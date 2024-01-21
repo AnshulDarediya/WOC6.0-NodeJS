@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', function () {
   socket.on('redirectToHome',  () => {
     // redirect to new URL
     console.log("Home");
+    alert("The Host of the Room Got Disconnected !! Thus all the member's of the room got Disconnected");
     window.location.href = "/";
   });
 
